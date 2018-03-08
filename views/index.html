@@ -1,0 +1,165 @@
+@{if model != null}
+<div style="background-color:#F0F0F0;padding:3px 10px">
+  Uploaded: <b style="color:black">@{model.info}</b>
+</div>
+@{fi}
+
+<div ng-app="trilaterationApp" ng-controller="mainController">
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">{{ title }}</a>
+      </div>
+
+      <div class="collapse navbar-collapse">
+        <form class="navbar-form navbar-left pull-right">
+          <a href="measurements/download" type="button" class="btn btn-success" ng-disabled="tags.length == 0">Download results</a>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <div class="alert alert-dismissible alert-warning hidden">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          <p></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row main-controller">
+
+      <!--Measurement-->
+      <div class="col-md-12">
+        <ul class="nav nav-tabs tri-tabs">
+          <li id="uploadNav" class="active"><a href="#upload" data-toggle="tab" aria-expanded="true">Upload</a></li>
+          <li id="resultsNav" class=""><a href="#results" data-toggle="tab" aria-expanded="false">Results</a></li>
+        </ul>
+        <div id="myTabContent" class="tab-content">
+
+          <!--Upload-->
+          <div class="tab-pane fade active in" id="upload">
+            <form class="dropzone">
+              <div class="fallback">
+                <input name="file" type="file" />
+              </div>
+            </form>
+          </div>
+
+          <!--Results-->
+          <div class="tab-pane fade" id="results">
+
+            <div class="panel panel-success">
+              <div class="panel-heading">
+                <h3 class="panel-title">Measured Tags</h3>
+              </div>
+              <div class="panel-body">
+                <p ng-if="tags.length == 0">No data to display.</p>
+                <table class="table table-striped table-hover results" ng-if="tags.length > 0">
+                  <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>X</th>
+                    <th>Y</th>
+                    <th>Anchor #1 X</th>
+                    <th>Anchor #1 Y</th>
+                    <th>Anchor #2 X</th>
+                    <th>Anchor #2 Y</th>
+                    <th>Anchor #3 X</th>
+                    <th>Anchor #3 Y</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr ng-repeat="tag in tags" ng-class="{ 'warning': !tag.valid }">
+                    <td>{{$index + 1}}</td>
+                    <td class="tag-position">{{tag.x | number:2}}</td>
+                    <td class="tag-position" >{{tag.y | number:2}}</td>
+                    <td>{{tag.anchor1.x | number:2}}</td>
+                    <td>{{tag.anchor1.y | number:2}}</td>
+                    <td>{{tag.anchor2.x | number:2}}</td>
+                    <td>{{tag.anchor2.y | number:2}}</td>
+                    <td>{{tag.anchor3.x | number:2}}</td>
+                    <td>{{tag.anchor3.y | number:2}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--<script type="text/javascript" src="/vendor/jquery/dist/jquery.js"></script>-->
+<!--<script type="text/javascript" src="/vendor/bootstrap/dist/js/bootstrap.js"></script>-->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/vendor/dropzone/dist/min/dropzone.min.js"></script>
+<script type="text/javascript" src="/vendor/angular/angular.min.js"></script>
+<!--<script type="text/javascript" src="/vendor/datatables/media/js/jquery.dataTables.js"></script>-->
+<script type="text/javascript" src="/app/trilateration.js"></script>
+
+<script type="text/javascript">
+  // Disabling autoDiscover, otherwise Dropzone will try to attach twice.
+  Dropzone.autoDiscover = false;
+
+  $(function() {
+    var myDropzone = new Dropzone("form.dropzone", {
+      url: "/measurements/upload",
+      dictDefaultMessage: 'Drop files here or click to upload.',
+      maxFiles: 1
+    });
+    myDropzone.on("success", function(data) {
+
+      if (!data) {
+        $('.alert p').text('Null Data!').removeClass('hidden');
+        $('.alert').removeClass('hidden');
+        return;
+      }
+
+      data = JSON.parse(data.xhr.response);
+
+      if (data.error) {
+        $('.alert p').text(data.message).removeClass('hidden');
+        $('.alert').removeClass('hidden');
+        return;
+      } else {
+        $('.alert').addClass('hidden');
+      }
+
+      $('table.results').dataTable().fnDestroy();
+
+      // Send data to AngularJS app
+      angular.element(".main-controller").scope().updateData(data);
+
+      setTimeout(function(){
+        // Render dataTable
+        $('table.results').DataTable({
+          "destroy": true,
+          "iDisplayLength": 25,
+          "searching": false
+        });
+        // Open results
+        $('#resultsNav a').trigger('click');
+      }, 1000);
+    });
+    myDropzone.on("maxfilesexceeded", function(file) {
+      this.removeAllFiles();
+      this.addFile(file);
+    });
+  })
+</script>

@@ -1,0 +1,7 @@
+name                            : Total.js
+author                          : Daniel Misina
+version                         : 1.0.0
+secret                          : ybHrLZUPqNiG5VtORswIlmdGb0n8rMJn
+
+// Database
+database                        : mongodb://admin:123qwe@ds115625.mlab.com:15625/trilateration

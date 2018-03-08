@@ -1,0 +1,22 @@
+ul.tri-tabs {
+    margin-bottom: 1em;
+}
+
+.dropzone {
+    color: #073642;
+    background-color: #a9bdbd;
+    border-radius: 6px;
+}
+
+.tag-position {
+    background-color: rgba(255,255,255,.05);
+}
+
+.dataTables_paginate.paging_simple_numbers .paginate_button {
+    cursor: pointer;
+    padding: 0 5px;
+}
+.dataTables_paginate.paging_simple_numbers .paginate_button.current {
+    background: #001f27;
+    text-decoration: underline;
+}

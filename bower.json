@@ -1,0 +1,23 @@
+{
+  "name": "trilaterationapp",
+  "description": "Application for calculating position of a tag by measurements from three anchors.",
+  "main": "server.js",
+  "authors": [
+    "Daniel Misina"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "public/vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "dropzone": "^5.1.1",
+    "datatables": "^1.10.16",
+    "angular": "^1.6.6"
+  }
+}
